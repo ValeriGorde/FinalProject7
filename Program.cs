@@ -25,9 +25,9 @@ namespace FinalProject7
         public string email;
 
         public string Name { get; set; }
-        public string Email 
+        public string Email
         {
-            set 
+            set
             {
                 if (!value.Contains('@'))
                 {
@@ -45,11 +45,39 @@ namespace FinalProject7
     }
 
     /// <summary>
-    /// Товар (наименование, тип товара)
+    /// Товар (здесь хранится тип товара, а также проверка размера обуви) 
     /// </summary>
     class Product
     {
-        public string Name { get; set; }
+        public bool check;
+        public int[] Size = new int[] { 37, 38, 39, 40, 45 };
+        public bool CheckSize(int sizeShoe)
+        {
+            for (int i = 0; i < Size.Length; i++)
+            {
+                if (Size[i] == sizeShoe)
+                {
+                    check = true;
+                    break;
+                }
+                else
+                {
+                    check = false;
+
+                }
+            }
+
+            if (check == true)
+            {
+                Console.WriteLine("Отлично, {0} размер есть в наличии!", sizeShoe);
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("К сожалению, вашего размера нет на складе, выберете дургой размер из имеющихся: 37, 38, 39, 40, 45.");
+                return true;
+            }
+        }
         public string Type { get; set; }
     }
 
@@ -69,7 +97,7 @@ namespace FinalProject7
 
     }
     /// <summary>
-    /// Пункт самовывоза (адрес пункта, выбор адреса мб)
+    /// Пункт самовывоза (выбор точки самовывоза)
     /// </summary>
 
     class PickPointDelivery : Delivery
@@ -112,25 +140,24 @@ namespace FinalProject7
 
     class Order<TDelivery, TProduct> where TDelivery : Delivery where TProduct : Product
     {
-        //public int correctNum = 0;
-        //public static bool InputCheck(string num, out int correctNum)
-        //{
-
-        //    if (int.TryParse(num, out int intnum))
-        //    {
-        //        if (intnum > 0)
-        //        {
-        //            correctNum = intnum;
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            correctNum = 0;
-        //            Console.WriteLine("Вы ввели неверное значение! Попробуйте ещё раз.");
-        //            return true;
-        //        }
-        //    }
-        //}
+        public string num;
+        public int numInt;
+        public static bool InputCheck(string num, out int corrNum)
+        {
+            if (int.TryParse(num, out int intNum))
+            {
+                if ((intNum > 0)&(intNum < 4))
+                {
+                    corrNum = intNum;
+                    return false;
+                }
+            }
+            {
+                corrNum = 0;
+                Console.WriteLine("Не корректный ввод, попробуйте снова");
+                return true;
+            }
+        }
 
         public void MakeOrder()
         {
@@ -141,26 +168,46 @@ namespace FinalProject7
             Console.WriteLine("Теперь нам нужна ваша почта, чтобы нужная информация о заказе доходила до вас. Введите почту: ");
             customer.Email = Console.ReadLine();
 
-            Console.WriteLine("Выберите тип одежды, которую вы хотите преобрести: \n1. Вверх \n2. Низ \n3. Обувь");
-            int type = int.Parse(Console.ReadLine());
+            do
+            {
+                Console.WriteLine("Выберите тип одежды, которую вы хотите преобрести: \n1. Вверх \n2. Низ \n3. Обувь");
+                num = Console.ReadLine();
+            }
+            while (InputCheck(num, out numInt));
+            int type = numInt;
 
+            Product product = new Product();
             switch (type)
             {
                 case 1:
                     Console.WriteLine("1. Футболка\n2. Лонгслив\n3. Свитшот");
                     int topType = int.Parse(Console.ReadLine());
+                    Product product1 = new Product();
+                    product1.Type = "Вверх";
                     break;
                 case 2:
                     Console.WriteLine("1. Джинсы\n2. Брюки\n3. Шорты");
                     int bottomType = int.Parse(Console.ReadLine());
+                    Product product2 = new Product();
+                    product2.Type = "Низ";
                     break;
                 case 3:
                     Console.WriteLine("1. Кроссовки\n2. Сапоги\n3. Туфли");
                     int shoesType = int.Parse(Console.ReadLine());
+                    Product product3 = new Product();
+                    product3.Type = "Обувь";
+
+                    int sizeShoes;
+                    do
+                    {
+                        Console.WriteLine("Пожалуйста, введите ваш размер обуви: ");
+                        sizeShoes = int.Parse(Console.ReadLine());
+                    }
+                    while (product3.CheckSize(sizeShoes));
                     break;
             }
 
-            Console.WriteLine("Теперь нам нужно узнать ваш адресс. Введите адресс: ");
+            Console.WriteLine("Теперь нам нужно узнать ваш адрес. Введите адрес: ");
             string adress = Console.ReadLine();
             Console.WriteLine("Доставка ожидается 15 числа, введите желаемое время для доставки: ");
             string time = Console.ReadLine();
@@ -203,7 +250,7 @@ namespace FinalProject7
     {
         static void Main(string[] args)
         {
-            
+
             bool check = false;
             do
             {
